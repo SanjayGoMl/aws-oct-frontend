@@ -50,6 +50,7 @@ const AnimatedRoutes = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create-news" element={<CreateNews />} />
           <Route path="/news/:userId/:projectId" element={<NewsDetails />} />
+          <Route path="/news/:userId/:projectId/" element={<NewsDetails />} />
         </Routes>
       </motion.div>
     </AnimatePresence>

@@ -530,26 +530,44 @@ For more updates, visit our dashboard or follow our emergency alerts.`
   return (
     <motion.div 
       className="news-details"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      style={{
+        position: 'relative',
+        zIndex: 1,
+        minHeight: '100vh',
+        display: 'block',
+        visibility: 'visible'
+      }}
     >
       {error && (
         <motion.div 
           className="error"
-          variants={itemVariants}
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
         >
           {error}
         </motion.div>
       )}
 
-      <motion.div className="news-details-header" variants={itemVariants}>
+      <motion.div 
+        className="news-details-header"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        style={{
+          display: 'block',
+          visibility: 'visible',
+          position: 'relative',
+          zIndex: 2
+        }}
+      >
         <motion.h1 
           className="news-details-title"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           {project?.title || project?.project_id}
@@ -586,7 +604,12 @@ For more updates, visit our dashboard or follow our emergency alerts.`
 
       {/* Images Section */}
       {project?.images && project.images.length > 0 && (
-        <motion.div className="images-section" variants={cardVariants}>
+        <motion.div 
+          className="images-section"
+          initial={{ y: 30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
           <motion.h3 
             className="section-title"
             initial={{ opacity: 0, x: -20 }}
@@ -598,7 +621,9 @@ For more updates, visit our dashboard or follow our emergency alerts.`
           </motion.h3>
           <motion.div 
             className="images-grid"
-            variants={containerVariants}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
           >
             {project.images && project.images.map((image, index) => {
               // Handle both old format (object key-value) and new API format (direct object)
@@ -621,9 +646,10 @@ For more updates, visit our dashboard or follow our emergency alerts.`
               return (
                 <motion.div 
                   key={index}
-                  variants={itemVariants}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ scale: 1.03 }}
-                  transition={{ duration: 0.3 }}
                 >
                   <motion.div 
                     className="news-details-image"
@@ -675,7 +701,12 @@ For more updates, visit our dashboard or follow our emergency alerts.`
       )}
 
       {/* Content Analysis Section */}
-      <motion.div className="content-section" variants={cardVariants}>
+      <motion.div 
+        className="content-section"
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+      >
         <motion.h3 
           className="section-title"
           initial={{ opacity: 0, y: -10 }}
@@ -687,7 +718,9 @@ For more updates, visit our dashboard or follow our emergency alerts.`
         
         <motion.div 
           style={{ marginBottom: '2rem' }}
-          variants={itemVariants}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
         >
           <h4 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', background: 'linear-gradient(135deg, #1e3a8a 0%, #0891b2 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Context Overview
@@ -700,7 +733,9 @@ For more updates, visit our dashboard or follow our emergency alerts.`
         {project?.metadata?.image_count > 0 && (
           <motion.div 
             style={{ marginBottom: '2rem' }}
-            variants={itemVariants}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
           >
             <h4 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', background: 'linear-gradient(135deg, #1e3a8a 0%, #0891b2 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Visual Analysis Summary
@@ -712,7 +747,11 @@ For more updates, visit our dashboard or follow our emergency alerts.`
         )}
 
         {project?.documents && project.documents.length > 0 && (
-          <motion.div variants={itemVariants}>
+          <motion.div 
+            initial={{ y: 30, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
             <h4 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', background: 'linear-gradient(135deg, #1e3a8a 0%, #0891b2 100%)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Document Analysis
             </h4>
@@ -734,7 +773,12 @@ For more updates, visit our dashboard or follow our emergency alerts.`
       </motion.div>
 
       {/* Action Buttons Section */}
-      <motion.div className="actions-section" variants={cardVariants}>
+      <motion.div 
+        className="actions-section"
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
+      >
         <motion.h3 
           className="section-title"
           initial={{ opacity: 0, y: -10 }}
@@ -745,15 +789,18 @@ For more updates, visit our dashboard or follow our emergency alerts.`
         </motion.h3>
         <motion.div 
           className="action-buttons"
-          variants={containerVariants}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.9 }}
         >
           <motion.button
             className={`action-btn ${activeAction === 'social' ? 'active' : ''}`}
             onClick={() => handleActionClick('social')}
-            variants={actionVariants}
-            whileHover="hover"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 1.0 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            animate={activeAction === 'social' ? 'active' : 'idle'}
           >
             <Share2 size={20} />
             Social Media Feed
@@ -762,10 +809,11 @@ For more updates, visit our dashboard or follow our emergency alerts.`
           <motion.button
             className={`action-btn ${activeAction === 'video' ? 'active' : ''}`}
             onClick={() => handleActionClick('video')}
-            variants={actionVariants}
-            whileHover="hover"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 1.1 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            animate={activeAction === 'video' ? 'active' : 'idle'}
           >
             <Video size={20} />
             Short Video Script
@@ -774,10 +822,11 @@ For more updates, visit our dashboard or follow our emergency alerts.`
           <motion.button
             className={`action-btn ${activeAction === 'newsletter' ? 'active' : ''}`}
             onClick={() => handleActionClick('newsletter')}
-            variants={actionVariants}
-            whileHover="hover"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.4, delay: 1.2 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            animate={activeAction === 'newsletter' ? 'active' : 'idle'}
           >
             <Mail size={20} />
             Newsletter

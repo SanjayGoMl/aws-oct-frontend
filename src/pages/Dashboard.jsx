@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Calendar, TrendingUp } from 'lucide-react';
 import ParticleWave from '../components/ParticleWave';
@@ -7,6 +7,7 @@ import LottieLoader from '../components/LottieLoader';
 import { newsAPI } from '../services/api';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,6 +19,13 @@ const Dashboard = () => {
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  // Handle navigation to news details with proper URL formatting
+  const handleNewsCardClick = (projectId) => {
+    const newsUrl = `/news/${userId}/${projectId}/`;
+    console.log('Navigating to:', newsUrl);
+    navigate(newsUrl);
+  };
 
   // Function to fetch document content from URL
   const fetchDocumentContent = async (url, projectId, docKey) => {
@@ -385,9 +393,10 @@ const Dashboard = () => {
               whileHover="hover"
               custom={index}
             >
-              <Link
-                to={`/news/${userId}/${project.project_id}`}
+              <div
+                onClick={() => handleNewsCardClick(project.project_id)}
                 className="news-card"
+                style={{ cursor: 'pointer' }}
               >
                 <motion.div 
                   className="news-image"
@@ -460,7 +469,7 @@ const Dashboard = () => {
                     </motion.span>
                   </div>
                 </div>
-              </Link>
+              </div>
             </motion.div>
           ))}
         </motion.div>
