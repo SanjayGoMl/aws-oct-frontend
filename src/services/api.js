@@ -1,28 +1,25 @@
 import axios from 'axios';
-
-const BASE_URL = 'http://54.144.102.147:8000';
+import config from '../config/api.js';
 
 const api = axios.create({
-  baseURL: BASE_URL,
-  timeout: 120000, // Increased timeout for file uploads
-  headers: {
-    'Accept': 'application/json',
-  },
-  withCredentials: false, // Disable credentials to avoid CORS issues
+  baseURL: config.baseURL,
+  timeout: config.timeouts.default,
+  headers: config.headers,
+  withCredentials: config.withCredentials,
 });
 
 export const newsAPI = {
   // Upload files and create news analysis
   uploadFiles: async (formData) => {
     try {
-      const response = await api.post('/api/analyze/upload', formData, {
+      const response = await api.post(config.endpoints.upload, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Accept': 'application/json',
         },
-        timeout: 300000, // 5 minutes for large file uploads
-        maxContentLength: 100 * 1024 * 1024, // 100MB
-        maxBodyLength: 100 * 1024 * 1024, // 100MB
+        timeout: config.timeouts.upload,
+        maxContentLength: config.upload.maxContentLength,
+        maxBodyLength: config.upload.maxBodyLength,
       });
       return response.data;
     } catch (error) {
@@ -40,7 +37,7 @@ export const newsAPI = {
   // Get all projects for a user
   getUserProjects: async (userId, limit = 50) => {
     try {
-      const response = await api.get(`/api/projects/${userId}?limit=${limit}`);
+      const response = await api.get(config.endpoints.projects(userId, limit));
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch projects');
@@ -50,7 +47,7 @@ export const newsAPI = {
   // Get detailed project information
   getProjectDetails: async (userId, projectId) => {
     try {
-      const response = await api.get(`/api/projects/${userId}/${projectId}`);
+      const response = await api.get(config.endpoints.projectDetails(userId, projectId));
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch project details');
