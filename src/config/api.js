@@ -3,7 +3,7 @@
 
 const config = {
   // Base API URL from environment variable or fallback
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://54.144.102.147:8000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://dhr41rn5474hv.cloudfront.net',
   
   // API endpoints
   endpoints: {
