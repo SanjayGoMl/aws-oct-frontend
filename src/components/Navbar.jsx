@@ -45,7 +45,7 @@ const Navbar = () => {
         >
           <Link to="/">
             <img 
-              src="/src/animations/goml.webp" 
+              src="/goml.webp" 
               alt="Crisis Journalist AI Logo" 
               style={{
                 display: 'block',
