@@ -41,11 +41,22 @@ const Navbar = () => {
           variants={logoVariants}
           whileHover="hover"
         >
-          <Link to="/" className="logo">
-            <div className="logo-icon">
-              <Zap size={22} color="white" />
-            </div>
-            Crisis Journalist AI
+          <Link to="/">
+            <img 
+              src="/src/animations/goml.webp" 
+              alt="Crisis Journalist AI Logo" 
+              style={{
+                display: 'block',
+                width: 'auto',
+                height: '60px',
+                maxWidth: 'none',
+                maxHeight: 'none',
+                border: 'none',
+                background: 'none',
+                padding: 0,
+                margin: 0
+              }}
+            />
           </Link>
         </motion.div>
       </div>
