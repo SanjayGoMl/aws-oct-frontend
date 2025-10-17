@@ -179,6 +179,21 @@ body::before {
   border: 1px solid rgba(30, 58, 138, 0.2);
 }
 
+/* Navbar Bottom Water Animation */
+.navbar-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0;
+  display: block;
+  width: 100%;
+  height: 490px;
+  overflow: hidden;
+  background: transparent;
+  z-index: -1;
+}
+
 /* Premium Dashboard Styles */
 .dashboard {
   padding: 2.5rem;
