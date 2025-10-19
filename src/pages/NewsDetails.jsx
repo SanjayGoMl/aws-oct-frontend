@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, MapPin, Calendar, FileText, Eye, Share2, Video, Mail, Sparkles } from 'lucide-react';
 import LottieLoader from '../components/LottieLoader';
+import VideoPlayerModal from '../components/VideoPlayerModal';
 import { newsAPI } from '../services/api';
 
 const NewsDetails = () => {
@@ -14,6 +15,11 @@ const NewsDetails = () => {
   const [actionLoading, setActionLoading] = useState(false);
   const [actionContent, setActionContent] = useState({});
   const [dataReady, setDataReady] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  
+  // Get video URL from environment variable (for demo purposes)
+  // In production, this should come from the API response
+  const videoUrl = import.meta.env.VITE_DEMO_VIDEO_URL || "";
 
   useEffect(() => {
     fetchProjectDetails();
@@ -222,6 +228,12 @@ const NewsDetails = () => {
   };
 
   const handleActionClick = async (action) => {
+    // Special handling for video action only - open modal directly
+    if (action === 'video') {
+      setIsVideoModalOpen(true);
+      return;
+    }
+
     if (activeAction === action) {
       setActiveAction(null);
       return;
@@ -239,9 +251,6 @@ const NewsDetails = () => {
     switch (action) {
       case 'social':
         content = generateSocialMediaPost();
-        break;
-      case 'video':
-        content = generateVideoScript();
         break;
       case 'newsletter':
         content = generateNewsletterContent();
@@ -917,6 +926,14 @@ For more updates, visit our dashboard or follow our emergency alerts.`
           )}
         </AnimatePresence>
       </motion.div>
+
+      {/* Video Player Modal */}
+      <VideoPlayerModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        videoUrl={videoUrl}
+        title={`Crisis Report: ${project?.title || 'Breaking News'}`}
+      />
     </motion.div>
   );
 };
