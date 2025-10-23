@@ -18,7 +18,7 @@ All environment variables must be prefixed with `VITE_` to be accessible in the 
 ### API Configuration
 
 - `VITE_API_BASE_URL`: Base URL for the Crisis Journalist AI API
-  - Default: `http://54.144.102.147:8000`
+  - Default: `http://0.0.0.000:8000`
   - Example: `https://your-api-domain.com`
 
 - `VITE_API_TIMEOUT`: Default API request timeout in milliseconds
