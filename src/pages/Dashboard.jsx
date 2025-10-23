@@ -6,23 +6,28 @@ import ParticleWave from '../components/ParticleWave';
 import LottieLoader from '../components/LottieLoader';
 import { newsAPI } from '../services/api';
 
-const Dashboard = () => {
+const Dashboard = ({ user }) => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [documentContents, setDocumentContents] = useState({});
+  const [showAllProjects, setShowAllProjects] = useState(true);
 
-  // Fixed user ID for all projects - consistent across the app
-  const userId = '101';
+  // Always fetch from user 101 first (default projects)
+  const defaultUserId = '101';
+  // User's personal ID
+  const userPersonalId = user?.user_id;
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [userPersonalId]);
 
   // Handle navigation to news details with proper URL formatting
-  const handleNewsCardClick = (projectId) => {
-    const newsUrl = `/news/${userId}/${projectId}/`;
+  const handleNewsCardClick = (project) => {
+    // Use the correct userId based on whether it's a default or user project
+    const projectUserId = project.isUserProject ? userPersonalId : defaultUserId;
+    const newsUrl = `/news/${projectUserId}/${project.project_id}/`;
     console.log('Navigating to:', newsUrl);
     navigate(newsUrl);
   };
@@ -81,50 +86,75 @@ const Dashboard = () => {
       setLoading(true);
       setError(null);
       
-      console.log(`Fetching projects for user: ${userId}`);
+      let allProjects = [];
       
-      // First, get the list of projects for the user
-      const projectsList = await newsAPI.getUserProjects(userId, 50);
-      console.log('Projects list response:', projectsList);
-      
-      if (!projectsList || !projectsList.projects || projectsList.projects.length === 0) {
-        console.log('No projects found for user');
-        setProjects([]);
-        setError(null);
-        return;
+      // Always fetch projects from user 101 first (default/public projects)
+      console.log(`Fetching default projects from user: ${defaultUserId}`);
+      try {
+        const defaultProjectsList = await newsAPI.getUserProjects(defaultUserId, 50);
+        console.log('Default projects list response:', defaultProjectsList);
+        
+        if (defaultProjectsList && defaultProjectsList.projects && defaultProjectsList.projects.length > 0) {
+          const defaultProjectIds = defaultProjectsList.projects.map(project => project.project_id);
+          console.log('Found default project IDs:', defaultProjectIds);
+          
+          // Fetch detailed information for each default project
+          const defaultProjectPromises = defaultProjectIds.map(projectId => 
+            newsAPI.getProjectDetails(defaultUserId, projectId).catch(error => {
+              console.error(`Failed to fetch details for default project ${projectId}:`, error);
+              return null;
+            })
+          );
+          
+          const defaultProjectResults = await Promise.allSettled(defaultProjectPromises);
+          const defaultSuccessfulProjects = defaultProjectResults
+            .filter(result => result.status === 'fulfilled' && result.value !== null)
+            .map(result => ({ ...result.value, isDefault: true }));
+          
+          allProjects = [...defaultSuccessfulProjects];
+          console.log(`Loaded ${defaultSuccessfulProjects.length} default projects`);
+        }
+      } catch (err) {
+        console.error('Failed to fetch default projects:', err);
       }
       
-      // Extract project IDs from the list
-      const projectIds = projectsList.projects.map(project => project.project_id);
-      console.log('Found project IDs:', projectIds);
-      
-      // Fetch detailed information for each project
-      const projectPromises = projectIds.map(projectId => 
-        newsAPI.getProjectDetails(userId, projectId).catch(error => {
-          console.error(`Failed to fetch details for project ${projectId}:`, error);
-          return null; // Return null for failed requests
-        })
-      );
-      
-      const projectResults = await Promise.allSettled(projectPromises);
-      
-      const successfulProjects = projectResults
-        .filter(result => result.status === 'fulfilled' && result.value !== null)
-        .map(result => result.value);
-        
-      console.log(`Successfully loaded ${successfulProjects.length} projects out of ${projectIds.length}`);
-      setProjects(successfulProjects);
-      
-      // Debug: Log project structure to understand document format
-      successfulProjects.forEach((project, index) => {
-        console.log(`Project ${index} (${project.project_id}):`, project);
-        if (project.documents) {
-          console.log(`Documents for ${project.project_id}:`, project.documents);
+      // If user has a personal ID different from 101, fetch their projects too
+      if (userPersonalId && userPersonalId !== defaultUserId) {
+        console.log(`Fetching personal projects for user: ${userPersonalId}`);
+        try {
+          const userProjectsList = await newsAPI.getUserProjects(userPersonalId, 50);
+          console.log('User projects list response:', userProjectsList);
+          
+          if (userProjectsList && userProjectsList.projects && userProjectsList.projects.length > 0) {
+            const userProjectIds = userProjectsList.projects.map(project => project.project_id);
+            console.log('Found user project IDs:', userProjectIds);
+            
+            // Fetch detailed information for each user project
+            const userProjectPromises = userProjectIds.map(projectId => 
+              newsAPI.getProjectDetails(userPersonalId, projectId).catch(error => {
+                console.error(`Failed to fetch details for user project ${projectId}:`, error);
+                return null;
+              })
+            );
+            
+            const userProjectResults = await Promise.allSettled(userProjectPromises);
+            const userSuccessfulProjects = userProjectResults
+              .filter(result => result.status === 'fulfilled' && result.value !== null)
+              .map(result => ({ ...result.value, isDefault: false, isUserProject: true }));
+            
+            allProjects = [...allProjects, ...userSuccessfulProjects];
+            console.log(`Loaded ${userSuccessfulProjects.length} personal projects`);
+          }
+        } catch (err) {
+          console.error('Failed to fetch user projects:', err);
         }
-      });
+      }
+      
+      console.log(`Total projects loaded: ${allProjects.length}`);
+      setProjects(allProjects);
       
       // Fetch document contents for projects that have documents
-      successfulProjects.forEach(project => {
+      allProjects.forEach(project => {
         if (project.documents && project.documents.length > 0) {
           project.documents.forEach((doc, index) => {
             const docKey = Object.keys(doc)[0];
@@ -135,6 +165,7 @@ const Dashboard = () => {
             // If the document value is a URL, fetch its content
             if (typeof docValue === 'string' && (docValue.startsWith('http') || docValue.startsWith('s3://'))) {
               console.log(`Fetching content for URL: ${docValue}`);
+              const userId = project.isUserProject ? userPersonalId : defaultUserId;
               fetchDocumentContent(docValue, project.project_id, docKey);
             }
           });
@@ -143,28 +174,9 @@ const Dashboard = () => {
       
       setError(null);
     } catch (err) {
-      setError('Failed to load projects. Using demo data.');
-      // Fallback to demo data if API fails
-      setProjects([
-        {
-          project_id: 'demo_1',
-          title: 'Philippines Earthquake',
-          created_at: '2025-10-15T12:11:42.217295Z',
-          context: 'Major earthquake hits central Philippines causing widespread damage',
-          has_images: true,
-          image_count: 2,
-          location: 'Philippines'
-        },
-        {
-          project_id: 'demo_2',
-          title: 'Uttarakhand Floods',
-          created_at: '2025-10-15T07:41:43.921372Z',
-          context: 'Heavy monsoon rains trigger severe flooding in Uttarakhand state',
-          has_images: true,
-          image_count: 1,
-          location: 'India'
-        }
-      ]);
+      console.error('Error in fetchProjects:', err);
+      setError('Failed to load projects.');
+      setProjects([]);
     } finally {
       setLoading(false);
     }
@@ -394,7 +406,7 @@ const Dashboard = () => {
               custom={index}
             >
               <div
-                onClick={() => handleNewsCardClick(project.project_id)}
+                onClick={() => handleNewsCardClick(project)}
                 className="news-card"
                 style={{ cursor: 'pointer' }}
               >

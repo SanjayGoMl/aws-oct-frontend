@@ -2,18 +2,10 @@
  * CreateNews Component - Crisis Journalism AI File Upload
  * 
  * USER ID SYSTEM:
- * - Uses a FIXED user ID '101' for all uploads (not unique per session)
- * - This means ALL uploads are associated with the same user account
- * - All projects created will be under user '101' in the database
- * - To implement unique users, you would need to:
- *   1. Generate unique IDs: const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
- *   2. Store in localStorage/sessionStorage for persistence
- *   3. Or implement proper user authentication
- * 
- * CURRENT BEHAVIOR:
- * - Same user sees all previously uploaded projects
- * - Projects are shared across all app sessions
- * - No user isolation (all data under user '101')
+ * - Uses authenticated user's ID from the auth system
+ * - Each user's uploads are associated with their unique account
+ * - Projects are isolated per user
+ * - User ID is generated from email hash during registration/login
  */
 
 import { useState, useRef } from 'react';
@@ -25,7 +17,7 @@ import FullPageLoader from '../components/FullPageLoader';
 import SuccessLoader from '../components/SuccessLoader';
 import { newsAPI } from '../services/api';
 
-const CreateNews = () => {
+const CreateNews = ({ user }) => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const excelInputRef = useRef(null);
@@ -52,9 +44,8 @@ const CreateNews = () => {
     excel: false
   });
 
-  // FIXED USER ID: '101' - All uploads use the same user account
-  // Change this to implement unique users per session if needed
-  const userId = '101';
+  // Use authenticated user's ID, fallback to '101' for backward compatibility
+  const userId = user?.user_id || '101';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

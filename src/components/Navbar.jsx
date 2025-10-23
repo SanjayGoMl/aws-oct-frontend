@@ -1,10 +1,10 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, PlusCircle, Zap } from 'lucide-react';
+import { Home, PlusCircle, LogOut, User } from 'lucide-react';
 import Lottie from 'lottie-react';
 import waterFillsSquareData from '../animations/background lines wave.json';
 
-const Navbar = () => {
+const Navbar = ({ user, onLogout }) => {
   const location = useLocation();
 
   const navVariants = {
@@ -91,6 +91,74 @@ const Navbar = () => {
             Create News
           </Link>
         </motion.div>
+
+        {/* User Profile Section */}
+        {user && (
+          <div style={{
+            marginTop: 'auto',
+            paddingTop: '1rem'
+          }}>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '0.75rem',
+                padding: '0.75rem 1rem',
+                borderRadius: '12px',
+                border: '2px solid #1e40af',
+                background: 'rgba(59, 130, 246, 0.5)',
+                backdropFilter: 'blur(10px)'
+              }}
+            >
+              <div style={{ 
+                flex: 1, 
+                minWidth: 0,
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <p style={{
+                  color: 'white',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  margin: 0,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                  {user.full_name || 'User'}
+                </p>
+              </div>
+              
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to logout?')) {
+                    onLogout();
+                  }
+                }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0.25rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  flexShrink: 0
+                }}
+                title="Logout"
+              >
+                <LogOut size={20} />
+              </motion.button>
+            </motion.div>
+          </div>
+        )}
       </div>
       
       {/* Water Animation at Bottom */}
