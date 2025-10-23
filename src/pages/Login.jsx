@@ -110,16 +110,23 @@ const Login = ({ onLoginSuccess, onShowRegister }) => {
               <div style={{ 
                 width: '48px', 
                 height: '48px', 
-                background: 'linear-gradient(135deg, #1e40af 0%, #7c3aed 100%)',
+                background: 'linear-gradient(135deg, #ffffffff 0%, #ffffff 100%)',
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'white',
-                fontSize: '24px',
-                fontWeight: 'bold'
+                padding: '8px',
+                overflow: 'hidden'
               }}>
-                📰
+                <img 
+                  src="/favicon.ico" 
+                  alt="Crisis Journalist AI" 
+                  style={{ 
+                    width: '100%', 
+                    height: '100%',
+                    objectFit: 'contain'
+                  }} 
+                />
               </div>
             </div>
             <h1 style={{ 
